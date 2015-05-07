@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Wp-Recall\n"
 "Report-Msgid-Bugs-To: Translator Name <translations@example.com>\n"
-"POT-Creation-Date: 2015-05-06 19:22+0400\n"
+"POT-Creation-Date: 2015-05-07 18:41+0400\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Your Name <you@example.com>\n"
 "Language-Team: wppost <support@wppost.ru>\n"
@@ -308,7 +308,7 @@ msgid "The user`s photo"
 msgstr "Пользовательские фото"
 
 #: add-on/gallery-recall/index.php:394 add-on/gallery-recall/index.php:405
-#: add-on/message/index.php:1255
+#: add-on/message/index.php:1257
 msgid "Reply"
 msgstr "Ответить"
 
@@ -788,7 +788,7 @@ msgstr "Заголовок"
 msgid "File does not exist on the server or it has already been loaded!"
 msgstr "Файла нет на сервере или он был удален!"
 
-#: add-on/message/index.php:22 add-on/message/index.php:1334
+#: add-on/message/index.php:22 add-on/message/index.php:1336
 msgid "The file was loaded."
 msgstr "Файл был загружен"
 
@@ -975,7 +975,7 @@ msgid "<b>Enter</b> - line break, <b>Ctrl+Enter</b> - send"
 msgstr "<b>Enter</b> - перенос строки, <b>Ctrl+Enter</b> - отправить"
 
 #: add-on/message/index.php:465 add-on/user-account/index.php:478
-#: templates/form-register.php:20 templates/form-remember.php:13
+#: templates/form-register.php:21 templates/form-remember.php:15
 msgid "Send"
 msgstr "Отправить"
 
@@ -991,7 +991,7 @@ msgstr "Здесь будет отображаться история переп
 msgid "Show older messages"
 msgstr "Показать более поздние сообщения"
 
-#: add-on/message/index.php:573 functions/includes.php:128
+#: add-on/message/index.php:573 functions/includes.php:130
 msgid "days"
 msgstr "дн."
 
@@ -1040,51 +1040,55 @@ msgstr "Снять"
 msgid "Mark as important"
 msgstr "Пометить как важное"
 
-#: add-on/message/index.php:878
+#: add-on/message/index.php:845
+msgid "No posts found!"
+msgstr "Сообщения не найдены!"
+
+#: add-on/message/index.php:880
 msgid "Show more recent messages"
 msgstr "Показать больше последних сообщений"
 
-#: add-on/message/index.php:998
+#: add-on/message/index.php:1000
 msgid "Your message has been sent!"
 msgstr "Ваше сообщение было доставлено!"
 
-#: add-on/message/index.php:1093
+#: add-on/message/index.php:1095
 msgid "The message is marked as read"
 msgstr "Сообщение помечено как прочтенное"
 
-#: add-on/message/index.php:1222
+#: add-on/message/index.php:1224
 msgid "You a new message!"
 msgstr "Вам новое сообщение!"
 
-#: add-on/message/index.php:1253
+#: add-on/message/index.php:1255
 msgid "Go to the correspondence"
 msgstr "Перейти к переписке"
 
-#: add-on/message/index.php:1308
+#: add-on/message/index.php:1310
 msgid "Show more recent posts"
 msgstr "Показать больше последних сообщений"
 
-#: add-on/message/index.php:1336
+#: add-on/message/index.php:1338
 msgid "The file has been received, but not yet loaded."
 msgstr "Файл был отправлен, но не был загружен."
 
-#: add-on/message/index.php:1337
+#: add-on/message/index.php:1339
 msgid "The file was sent to the recipient."
 msgstr "Файл был отправлен получателю,"
 
-#: add-on/message/index.php:1340
+#: add-on/message/index.php:1342
 msgid "Link to sent the file"
 msgstr "Ссылка на файл"
 
-#: add-on/message/index.php:1342
+#: add-on/message/index.php:1344
 msgid "(accept files only from trusted sources)"
 msgstr "(принимайте файлы только от доверенных источников)"
 
-#: add-on/message/index.php:1370
+#: add-on/message/index.php:1372
 msgid "The file was sent successfully."
 msgstr "Файл был успешно отправлен"
 
-#: add-on/message/index.php:1373
+#: add-on/message/index.php:1375
 msgid ""
 "You have exceeded the limit on the number of uploaded files. Wait until the "
 "files sent previously will be accepted."
@@ -1092,11 +1096,11 @@ msgstr ""
 "Вы достигли предела по кол-ву отправляемых файлов. Подождите пока файлы "
 "отправленные ранее будут приняты."
 
-#: add-on/message/index.php:1382
+#: add-on/message/index.php:1384
 msgid "Removes the file from the server"
 msgstr "Удаляю файл с сервера"
 
-#: add-on/message/index.php:1432
+#: add-on/message/index.php:1434
 msgid ""
 "Exceeded the allowable file size.\n"
 " hearths file"
@@ -1229,8 +1233,9 @@ msgid "The number of purse"
 msgstr "Номер кошелька"
 
 #: add-on/money-wallet/index.php:168
-msgid "Withdrawal amount (Commission for withdrawal %s %)"
-msgstr "Сумма на вывод (Комиссия при выводе %s %)"
+#, php-format
+msgid "Withdrawal amount (Commission for withdrawal %s)"
+msgstr ""
 
 #: add-on/money-wallet/index.php:169
 msgid "Send enquiry"
@@ -1501,8 +1506,8 @@ msgid "Show the admin bar when viewing site"
 msgstr "Отображать панель администратора на сайте"
 
 #: add-on/profile/index.php:261 add-on/profile/index.php:638
-#: functions/loginform.php:161 functions/loginform.php:185
-#: templates/form-remember.php:14 templates/form-sign.php:23
+#: functions/loginform.php:163 functions/loginform.php:187
+#: templates/form-remember.php:16 templates/form-sign.php:25
 #: templates/recallbar.php:18 templates/recallbar.php:32
 msgid "Login"
 msgstr "Вход"
@@ -2796,25 +2801,25 @@ msgstr "Публикация ожидает утверждения!"
 msgid "Enter characters"
 msgstr "Введите символы"
 
-#: functions/includes.php:59
+#: functions/includes.php:61
 msgid "This letter was created automatically, no need to answer it."
 msgstr ""
 "Это сообщение было сформировано автоматически, не надо отвечать на него."
 
-#: functions/includes.php:112 functions/includes.php:130
+#: functions/includes.php:114 functions/includes.php:132
 msgid "long ago"
 msgstr "давно"
 
-#: functions/includes.php:122 functions/includes.php:124
-#: functions/includes.php:128
+#: functions/includes.php:124 functions/includes.php:126
+#: functions/includes.php:130
 msgid "already"
 msgstr "уже"
 
-#: functions/includes.php:122
+#: functions/includes.php:124
 msgid "min."
 msgstr "мин."
 
-#: functions/includes.php:124
+#: functions/includes.php:126
 msgid "h."
 msgstr "ч."
 
@@ -2835,75 +2840,75 @@ msgstr "Пароли не совпадают!"
 msgid "The passwords match"
 msgstr "Пароли совпадают"
 
-#: functions/loginform.php:133
+#: functions/loginform.php:135
 msgid "Hi"
 msgstr "Привет"
 
-#: functions/loginform.php:135 functions/loginform.php:145
+#: functions/loginform.php:137 functions/loginform.php:147
 msgid "In personal account"
 msgstr "В личный кабинет"
 
-#: functions/loginform.php:146
+#: functions/loginform.php:148
 msgid "Exit"
 msgstr "Выход"
 
-#: functions/loginform.php:162 functions/loginform.php:186
+#: functions/loginform.php:164 functions/loginform.php:188
 #: functions/rcl_userlist.php:282 functions/shortcodes.php:239
-#: templates/form-register.php:4 templates/form-remember.php:16
-#: templates/form-sign.php:25 templates/recallbar.php:17
+#: templates/form-register.php:4 templates/form-remember.php:18
+#: templates/form-sign.php:27 templates/recallbar.php:17
 #: templates/recallbar.php:31
 msgid "Registration"
 msgstr "Регистрация"
 
-#: functions/loginform.php:208
+#: functions/loginform.php:210
 msgid "Login invalid characters!"
 msgstr "В логине недопустимые символы!"
 
-#: functions/loginform.php:209 functions/loginform.php:222
+#: functions/loginform.php:211 functions/loginform.php:224
 msgid "Fill in the fields!"
 msgstr "Заполните поля!"
 
-#: functions/loginform.php:210
+#: functions/loginform.php:212
 msgid "Field filled not right CAPTCHA!"
 msgstr "Не верно заполнено поле CAPTCHA!"
 
-#: functions/loginform.php:211
+#: functions/loginform.php:213
 msgid "Username already in use!"
 msgstr "Логин уже используется!"
 
-#: functions/loginform.php:212
+#: functions/loginform.php:214
 msgid "E-mail is already in use!"
 msgstr "E-mail уже используется!"
 
-#: functions/loginform.php:213
+#: functions/loginform.php:215
 msgid "Invalid E-mail!"
 msgstr "Некорректный E-mail!"
 
-#: functions/loginform.php:216
+#: functions/loginform.php:218
 msgid "Registration is completed! Check your email."
 msgstr "Регистрация завершена! Проверьте свой E-mail."
 
-#: functions/loginform.php:221
+#: functions/loginform.php:223
 msgid "Your email is not confirmed!"
 msgstr "Ваш E-mail не подтвержден!"
 
-#: functions/loginform.php:223
+#: functions/loginform.php:225
 msgid "Username or password are not correct!"
 msgstr "Логин или пароль не верны!"
 
-#: functions/loginform.php:226
+#: functions/loginform.php:228
 msgid "Registration is completed! Check your email"
 msgstr "Регистрация завершена! Проверьте свой E-mail"
 
-#: functions/loginform.php:232
+#: functions/loginform.php:234
 msgid "Your password has been sent!<br>Check your email."
 msgstr "Новый пароль был сформирован! Проверьте свою почту."
 
-#: functions/loginform.php:257
+#: functions/loginform.php:259
 msgid "Error filling!"
 msgstr "Ошибка заполнения!"
 
-#: functions/loginform.php:277
+#: functions/loginform.php:279
 msgid "Repeat password is not correct!"
 msgstr "Повтор пароля не верный!"
 
@@ -3195,7 +3200,7 @@ msgstr "Неподтвержденные"
 msgid "Ban"
 msgstr "Бан"
 
-#: templates/form-register.php:22
+#: templates/form-register.php:23
 msgid "Login "
 msgstr "Логин"
 
@@ -3215,9 +3220,9 @@ msgstr "Авторизация"
 msgid "Remember"
 msgstr "Запомнить"
 
-#: templates/form-sign.php:27
+#: templates/form-sign.php:29
 msgid "Forgot your password"
-msgstr "Повторите пароль"
+msgstr "Напомнить пароль"
 
 #: templates/recallbar.php:27
 msgid "Home"
@@ -3258,6 +3263,9 @@ msgstr "Блок с основной информацией профиля"
 #: widget.php:159
 msgid "Control panel"
 msgstr "Панель управления"
+
+#~ msgid "Withdrawal amount (Commission for withdrawal %s %)"
+#~ msgstr "Сумма на вывод (Комиссия при выводе %s %)"
 
 #~ msgid "The plugin is activated"
 #~ msgstr "Плагин активирован"

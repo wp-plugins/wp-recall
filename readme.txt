@@ -12,6 +12,8 @@ WordPress plugin to create a personal user profile
 
 == Description ==
 
+Внимание! Обновление плагина через репозиторий WordPress обновит только базовую часть плагина, дополнения не входящие в базовую версию плагина будут удалены!
+
 WordPress plugin to create a personal user profile. The plugin creates a personal account of the user, user group, reviews. 
 The plugin allows you to exchange private messages and more. Plug-in extends its functionality through its supplements.
 
@@ -28,9 +30,7 @@ http://wppost.ru/nash-magazin/
 
 == Installation ==
 
-Внимание! Обновление плагина через репозиторий WordPress обновит только базовую часть плагина, дополнения не входящие в базовую версию плагина будут удалены!
-
-1. Upload dir `wp-recall` to the `/wp-content/plugins/` directory
+1. Upload dir `recall` to the `/wp-content/plugins/` directory
 2. Activate the plugin through the 'Plugins' menu in WordPress
 
 When you first activate the plugin will create necessary for its operation and activates the basic page supplement.
