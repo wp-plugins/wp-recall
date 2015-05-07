@@ -1,6 +1,6 @@
 <?
 	/*Шаблон для отображения содержимого шорткода basket - полной корзины пользователя*/
-	/*Данный шаблон можно разместить в папке используемого шаблона /recall/templates/ и он будет подключаться оттуда*/
+	/*Данный шаблон можно разместить в папке используемого шаблона /wp-recall/templates/ и он будет подключаться оттуда*/
 ?>
 <?php global $products,$product,$CartData; ?>
 <div id="cart-form" class="cart-data">
@@ -18,7 +18,7 @@
 				<td data-product="<?php rcl_product_ID(); ?>">
 					<a class="edit-num add-product" href="#"><i class="fa fa-plus"></i></a>
 					<a class="edit-num remove-product" href="#"><i class="fa fa-minus"></i></a>
-					<span class="number-product"><?php rcl_product_number(); ?></span>						
+					<span class="number-product"><?php rcl_product_number(); ?></span>
 				</td>
 				<td class="sumprice-product"><?php rcl_product_summ(); ?></td>
 			</tr>

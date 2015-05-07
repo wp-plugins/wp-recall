@@ -1,10 +1,10 @@
 <?
 	/*Шаблон для отображения содержимого шорткода productslist с указанием атрибута type='list'*/
-	/*Данный шаблон можно разместить в папке используемого шаблона /recall/templates/ и он будет подключаться оттуда*/
+	/*Данный шаблон можно разместить в папке используемого шаблона /wp-recall/templates/ и он будет подключаться оттуда*/
 ?>
 <?php global $post; ?>
 <div class="prodlist">
-    
+
     <div class="prod-single list-list">
         <?php if ( has_post_thumbnail()) : ?>
                 <div class="thumb-prod" width="110">
@@ -23,7 +23,7 @@
             <div class="product-excerpt">
                     <?php rcl_product_excerpt(); ?>
             </div>
-            
+
             <?php echo rcl_get_product_category($post->ID); ?>
 
             <?php echo rcl_get_cart_button($post->ID); ?>
@@ -31,5 +31,5 @@
         </div>
 
     </div>
-	
+
 </div>

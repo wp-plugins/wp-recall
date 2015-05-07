@@ -1,8 +1,8 @@
 <?
-	/*Шаблон для отображения содержимого отдельного заказа, 
-	также используется при формировании письма-уведомления 
+	/*Шаблон для отображения содержимого отдельного заказа,
+	также используется при формировании письма-уведомления
 	о заказе и его содержимом на почту пользователя (поэтому есть указание bordercolor и border для тега table)*/
-	/*Данный шаблон можно разместить в папке используемого шаблона /recall/templates/ и он будет подключаться оттуда*/
+	/*Данный шаблон можно разместить в папке используемого шаблона /wp-recall/templates/ и он будет подключаться оттуда*/
 ?>
 <?php global $order,$product; ?>
 <div id="cart-form" class="cart-data">
@@ -12,13 +12,13 @@
 			<th>Цена</th>
 			<th class="product-number">Количество</th>
 			<th>Сумма</th>
-		</tr>		
+		</tr>
 		<?php foreach($order->products as $product): ?>
 			<tr id="product-<?php rcl_product_ID; ?>">
 				<td><a href="<?php rcl_product_permalink(); ?>"><?php rcl_product_title(); ?></a></td>
 				<td><?php rcl_product_price(); ?></td>
-				<td align="center" data-product="<?php rcl_product_ID; ?>">					
-					<span class="number-product"><?php rcl_product_number(); ?></span>						
+				<td align="center" data-product="<?php rcl_product_ID; ?>">
+					<span class="number-product"><?php rcl_product_number(); ?></span>
 				</td>
 				<td class="sumprice-product"><?php rcl_product_summ(); ?></td>
 			</tr>

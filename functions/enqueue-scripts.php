@@ -89,7 +89,7 @@ function rcl_frontend_scripts(){
             foreach($css_ar as $name){wp_enqueue_style( 'style_'.$name, RCL_URL.'css/'.$name.'.css' );}
 	}
 	if($rcl_options['color_theme']){
-            $dirs   = array(RCL_PATH.'css/themes',TEMPLATEPATH.'/recall/themes');
+            $dirs   = array(RCL_PATH.'css/themes',TEMPLATEPATH.'/wp-recall/themes');
             foreach($dirs as $dir){
                 if(!file_exists($dir.'/'.$rcl_options['color_theme'].'.css')) continue;
                 wp_enqueue_style( 'theme_rcl', rcl_path_to_url($dir.'/'.$rcl_options['color_theme'].'.css') );

@@ -62,7 +62,7 @@ function rcl_tab($id,$callback,$name='',$args=false){
 
 function rcl_get_template_path($file_temp,$path=false){
     $dirs   = array(
-        TEMPLATEPATH.'/recall/templates/',
+        TEMPLATEPATH.'/wp-recall/templates/',
         RCL_PATH.'templates/'
     );
 

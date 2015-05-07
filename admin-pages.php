@@ -54,7 +54,7 @@ function rcl_postmeta_update( $post_id ){
     if ( defined('DOING_AUTOSAVE') && DOING_AUTOSAVE  ) return false;
     if ( !current_user_can('edit_post', $post_id) ) return false;
 
-    if( !isset($_POST['wprecall']) ) return false;	
+    if( !isset($_POST['wprecall']) ) return false;
 
     $_POST['wprecall'] = array_map('trim', (array)$_POST['wprecall']);
     foreach((array) $_POST['wprecall'] as $key=>$value ){
@@ -69,11 +69,11 @@ function rcl_postmeta_update( $post_id ){
 *************************************************/
 function rcl_data_type_profile_field(){
 
-	//$type = $_POST['type'];	
-	$slug = sanitize_title($_POST['slug']);		
-	
+	//$type = $_POST['type'];
+	$slug = sanitize_title($_POST['slug']);
+
 	$content = '<textarea rows="1" name="field_select_'.$slug.'"></textarea>';
-	
+
 	$data['result']=100;
 	$data['content']= $content;
 	echo json_encode($data);
@@ -89,23 +89,23 @@ function rcl_global_options(){
 
     include_once RCL_PATH.'functions/rcl_options.php';
     $fields = new Rcl_Options();
-        
+
     $rcl_options = get_option('primary-rcl-options');
 
     $content = '<h2>'.__('Configure the plugin Wp-Recall and additions','rcl').'</h2>
         <div id="recall" class="left-sidebar wrap">
 	<form method="post" action="">
 	'.wp_nonce_field('update-options-rcl','_wpnonce',true,false).'
-	<span class="title-option active">'.__('General settings','rcl').'</span>	
+	<span class="title-option active">'.__('General settings','rcl').'</span>
 	<div class="wrap-recall-options" style="display:block;">';
-    
-                $args = array(    
-                    'selected'   => $rcl_options['lk_page_rcl'],   
+
+                $args = array(
+                    'selected'   => $rcl_options['lk_page_rcl'],
                     'name'       => 'lk_page_rcl',
                     'show_option_none' => '<span style="color:red">'.__('Not selected','rcl').'</span>',
-                    'echo'       => 0  
+                    'echo'       => 0
                 );
-                
+
                 $content .= $fields->option_block(array(
                     $fields->title(__('Personal account','rcl')),
                     $fields->label(__('The order of withdrawal of the personal Cabinet','rcl')),
@@ -121,7 +121,7 @@ function rcl_global_options(){
                             'name'=>'view_user_lk_rcl',
                             'value'=>1
                         ),
-                        array( 
+                        array(
                             $fields->label(__('The host page the shortcode','rcl')),
                             wp_dropdown_pages( $args ),
                             $fields->label(__('The formation of links to personal account','rcl')),
@@ -138,18 +138,18 @@ function rcl_global_options(){
                             __('Ajax loading','rcl'))
                     )),
                     $fields->label(__('Inactivity timeout','rcl')),
-                    $fields->option('number',array('name'=>'timeout')),			
+                    $fields->option('number',array('name'=>'timeout')),
                     $fields->notice(__('Specify the time in minutes after which the user will be considered offline if you did not show activity on the website. The default is 10 minutes.','rcl'))
-                )); 
-                
-                
+                ));
+
+
                 $roles = array(
                     10=>__('only Administrators','rcl'),
                     7=>__('Editors and older','rcl'),
                     2=>__('Authors and older','rcl'),
                     1=>__('Participants and older','rcl'),
                     0=>__('All users','rcl'));
-                
+
                 $content .= $fields->option_block(array(
                     $fields->title(__('Access to the console','rcl')),
                     $fields->label(__('Access to the site is permitted console','rcl')),
@@ -160,14 +160,14 @@ function rcl_global_options(){
                     )),
                     $fields->notice(__('If the selected archive page of the author, in the right place template author.php paste the code if(function_exists(\'wp_recall\')) wp_recall();','rcl')),
 
-                ));               
-                
+                ));
+
 		$filecss = (file_exists(TEMP_PATH.'css/minify.css'))? '<a href="'.RCL_URL.'css/getcss.php">'.__('Download the current style file for editing','rcl').'</a>':'';
                 $content .= $fields->option_block(
                     array(
-			$fields->title(__('Making','rcl')),	
-                        
-			$fields->label(__('The placement of the buttons sections','rcl')),						
+			$fields->title(__('Making','rcl')),
+
+			$fields->label(__('The placement of the buttons sections','rcl')),
                         $fields->option('select',array(
                             'name'=>'buttons_place',
                             'options'=>array(
@@ -176,12 +176,12 @@ function rcl_global_options(){
                         )),
 
 			rcl_theme_list(),
-                        
+
                         $fields->label(__('Pause Slider','rcl')),
                         $fields->option('number',array('name'=>'slide-pause')),
-                        $fields->notice(__('The value of the pause between slide transitions in seconds. Default value is 0 - the slide show is not made','rcl')),                       
-                        
-                        $fields->label(__('Minimization of style files','rcl')),				
+                        $fields->notice(__('The value of the pause between slide transitions in seconds. Default value is 0 - the slide show is not made','rcl')),
+
+                        $fields->label(__('Minimization of style files','rcl')),
                         $fields->option('select',array(
                             'name'=>'minify_css',
                             'parent'=>true,
@@ -208,7 +208,7 @@ function rcl_global_options(){
                 $content .= $fields->option_block(
                     array(
                         $fields->title(__('Login and register','rcl')),
-                        $fields->label(__('The order','rcl')), 
+                        $fields->label(__('The order','rcl')),
                         $fields->option('select',array(
                             'name'=>'login_form_recall',
                             'parent'=>true,
@@ -256,23 +256,23 @@ function rcl_global_options(){
                                 $fields->notice(__('Enter your URL below, if you select an arbitrary URL after login','rcl'))
                             )
                         ),
-                        $fields->label(__('Field repeat password','rcl')),                       
+                        $fields->label(__('Field repeat password','rcl')),
                         $fields->option('select',array(
                             'name'=>'repeat_pass',
                             'options'=>array(__('Disabled','rcl'),__('Displayed','rcl'))
                         )),
-                        $fields->label(__('Indicator password complexity','rcl')),                       
+                        $fields->label(__('Indicator password complexity','rcl')),
                         $fields->option('select',array(
                             'name'=>'difficulty_parole',
                             'options'=>array(__('Disabled','rcl'),__('Displayed','rcl'))
                         ))
                     )
-                );   
+                );
 
                 $content .= $fields->option_block(
                     array(
                         $fields->title(__('Recallbar','rcl')),
-                        $fields->label(__('Conclusion the panel recallbar','rcl')), 
+                        $fields->label(__('Conclusion the panel recallbar','rcl')),
                         $fields->option('select',array(
                             'name'=>'view_recallbar',
                             'options'=>array(__('Disabled','rcl'),__('Included','rcl'))
@@ -283,16 +283,16 @@ function rcl_global_options(){
                 $content .= $fields->option_block(
                     array(
                         $fields->title(__('Your gratitude','rcl')),
-                        $fields->label(__('To display a link to the developer`s site (Thank you, if you decide to show)','rcl')), 
+                        $fields->label(__('To display a link to the developer`s site (Thank you, if you decide to show)','rcl')),
                         $fields->option('select',array(
                                'name'=>'footer_url_recall',
                                'options'=>array(__('No','rcl'),__('Yes','rcl'))
                         ))
                     )
-                );  
-                
+                );
+
     $content .= '</div>';
-		
+
     $content = apply_filters('admin_options_wprecall',$content);
 
     $content .= '<div class="submit-block">
@@ -304,36 +304,36 @@ function rcl_global_options(){
 
 function rcl_theme_list(){
     global $rcl_options;
-    
+
     if(!isset($rcl_options['color_theme'])) $color_theme = 1;
     else $color_theme = $rcl_options['color_theme'];
-    $dirs   = array(RCL_PATH.'css/themes',TEMPLATEPATH.'/recall/themes');
+    $dirs   = array(RCL_PATH.'css/themes',TEMPLATEPATH.'/wp-recall/themes');
     $t_list = '';
     foreach($dirs as $dir){
         //echo $dir;
         if(!file_exists($dir)) continue;
         $ts = scandir($dir,1);
-        
+
         foreach((array)$ts as $t){
                 if ( false == strpos($t, '.css') ) continue;
                 $name = str_replace('.css','',$t);
-                $t_list .= '<option value="'.$name.'" '.selected($color_theme,$name,false).'>'.$name.'</option>';	
+                $t_list .= '<option value="'.$name.'" '.selected($color_theme,$name,false).'>'.$name.'</option>';
         }
     }
     if($t_list){
             $content = '<label>'.__('Used template','rcl').'</label>';
             $content .= '<select name="color_theme" size="1">
                 <option value="">'.__('Not connected','rcl').'</option>
-                    '.$t_list.'				
+                    '.$t_list.'
             </select>';
-            
+
         return $content;
     }
     return false;
 }
 /*no found*/
 function rcl_url_theme(){
-    $dirs   = array(TEMPLATEPATH.'/recall/themes',RCL_PATH.'css/themes');
+    $dirs   = array(TEMPLATEPATH.'/wp-recall/themes',RCL_PATH.'css/themes');
     foreach($dirs as $dir){
         if(!file_exists($dir.'/'.$rcl_options['color_theme'].'.css')) continue;
         wp_enqueue_theme_rcl(rcl_path_to_url($dir.'/'.$rcl_options['color_theme'].'.css'));
