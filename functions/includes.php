@@ -1,5 +1,7 @@
 <?php
 
+include_once 'rcl_activate.php';
+
 function rcl_addon_url($file,$path){
     if(function_exists('wp_normalize_path')) $path = wp_normalize_path($path);
     $array = explode('/',$path);
