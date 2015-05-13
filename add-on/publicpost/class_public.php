@@ -10,7 +10,7 @@ class Rcl_Public{
                 $page = 1;
 		if(isset($_POST['page'])) $page = intval($_POST['page']);
 		if($user_ID){
-			include_once('../../functions/navi-rcl.php');
+			
 			$where = $wpdb->prepare("WHERE post_author='%d' AND post_type='attachment' AND post_mime_type LIKE '%s'",$user_ID,'image%');
 			$cnt = $wpdb->get_var("SELECT COUNT(ID) FROM ".$wpdb->prefix."posts $where");
 			$rclnavi = new RCL_navi(20,$cnt,false,$page);
