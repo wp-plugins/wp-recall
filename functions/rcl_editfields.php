@@ -84,13 +84,18 @@ class Rcl_EditFields {
             'multiselect'=>1,
             'checkbox'=>1,
             'agree'=>1,
-            'radio'=>1
+            'radio'=>1,
+            'file'=>1
         );
 
+        $notice = ($this->vals['type']=='file')? __('specify the types of files that are loaded by a comma, for example: image/*, video/*','rcl'): __('the list of options to share the " # " sign','rcl');
+
         $textarea_select = (isset($types[$this->vals['type']]))?
-            $textarea_select = __('the list of options to share the " # " sign','rcl').'<br>'
+            $notice.'<br>'
                         . '<textarea rows="1" class="field-select" style="height:50px" name="field[field_select][]">'.$this->vals['field_select'].'</textarea>'
         : '';
+
+        $textarea_select .= ($this->vals['type']=='file')? '<input type="number" name="field[sizefile]['.$this->vals['slug'].']" value="'.$this->vals['sizefile'].'"> '.__('maximum size of uploaded file, MB (Default - 2)','rcl').'<br>':'';
 
         $field = '<li id="item-'.$this->vals['slug'].'" class="menu-item menu-item-edit-active">
                 '.$this->header_field().'
@@ -145,7 +150,8 @@ class Rcl_EditFields {
                 'date'=>__('Date','rcl'),
                 'time'=>__('Time','rcl'),
                 'url'=>__('Url','rcl'),
-                'agree'=>__('Agreement','rcl')
+                'agree'=>__('Agreement','rcl'),
+                'file'=>__('File','rcl')
             )
         ));
     }
@@ -295,9 +301,9 @@ class Rcl_EditFields {
                 }
         }
         $fs = 0;
-        $tps = array('select'=>1,'multiselect'=>1,'radio'=>1,'checkbox'=>1,'agree'=>1);
+        $tps = array('select'=>1,'multiselect'=>1,'radio'=>1,'checkbox'=>1,'agree'=>1,'file'=>1);
         foreach($_POST['field'] as $key=>$data){
-            if($key=='field_select') continue;
+            if($key=='field_select'||$key=='sizefile') continue;
             foreach($data as $a=>$value){
                 if($table&&!$_POST['field']['title'][$a]){
                     if($_POST['field']['slug'][$a]){
@@ -309,9 +315,14 @@ class Rcl_EditFields {
                     $value = str_replace('-','_',sanitize_title($_POST['field']['title'][$a]).'-'.rand(10,100));
                 }
                 if($key=='type'){
+
+                    if($_POST['field']['type'][$a]=='file'){
+                        $fields[$a]['sizefile'] = $_POST['field']['sizefile'][$_POST['field']['slug'][$a]];
+                    }
                     if(isset($tps[$_POST['field']['type'][$a]])){
                         $fields[$a]['field_select'] = $_POST['field']['field_select'][$fs++];
                     }
+
                 }
                 $fields[$a][$key] = $value;
             }
@@ -323,7 +334,7 @@ class Rcl_EditFields {
                 $this->delete($del,$table);
             }
         }
-
+        //print_r($fields);
         $res = update_option( $this->name_option, $fields );
 
         if($res) $Option_Value = $fields;
