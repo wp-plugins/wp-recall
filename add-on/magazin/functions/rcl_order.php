@@ -45,6 +45,7 @@ class Rcl_Order {
         global $rmag_options;
         $false_amount = false;
         if($rmag_options['products_warehouse_recall']==1){ //если включен учет наличия товара
+
             if(isset($_SESSION['cart'])){
                 foreach($_SESSION['cart'] as $prod_id=>$val){
                     if(get_post_meta($prod_id, 'availability_product', 1)=='empty'){ //если товар цифровой
@@ -58,6 +59,8 @@ class Rcl_Order {
                             }else{
                                     $false_amount[$prod_id] = $val['number'];
                             }
+                        }else{
+                            $false_amount[$prod_id] = $val['number'];
                         }
                     }
                 }
@@ -69,9 +72,12 @@ class Rcl_Order {
 
     function get_order_id(){
         global $wpdb;
-        $num_max = $wpdb->get_var("SELECT MAX(order_id) FROM ".RMAG_PREF ."orders_history");
-        if($num_max) $this->order_id = $num_max+1;
+
+        $pay_max = $wpdb->get_var("SELECT MAX(order_id) FROM ".RMAG_PREF ."orders_history");
+
+        if($pay_max) $this->order_id = $pay_max+1;
         else $this->order_id = rand(0,100);
+
         return $this->order_id;
     }
 

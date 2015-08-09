@@ -3,7 +3,7 @@
 <?php rcl_before(); ?>
 
 <div id="rcl-<?php echo $user_LK; ?>" class="wprecallblock">
-    <?php rcl_notify(); ?>
+    <?php rcl_notice(); ?>
 
     <div id="lk-conteyner">
         <div class="lk-header">
@@ -17,15 +17,20 @@
         </div>
         <div class="lk-content">
             <h2><?php rcl_username(); ?></h2>
-            <div class="status">
+            <div class="rcl-action">
                 <?php rcl_action(); ?>
             </div>
-            <?php rcl_status_desc(); ?>
-            <?php rcl_content(); ?>
+            <div class="rcl-user-status">
+                <?php rcl_status_desc(); ?>
+            </div>
+            <div class="rcl-content">
+                <?php rcl_content(); ?>
+            </div>
+            <div class="lk-footer">
+                <?php rcl_footer(); ?>
+            </div>
         </div>
-        <div class="lk-footer">
-            <?php rcl_footer(); ?>
-        </div>
+
     </div>
 
     <?php $class = (isset($rcl_options['buttons_place'])&&$rcl_options['buttons_place']==1)? "left-buttons":""; ?>

@@ -1,7 +1,12 @@
 <?php
 
 function rcl_referer_url($typeform=false){
-    $url = 'http://'.$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];
+	echo rcl_get_current_url($typeform);
+}
+
+function rcl_get_current_url($typeform=false){
+	$protocol  = @( $_SERVER["HTTPS"] != 'on' ) ? 'http://':  'https://';
+    $url = $protocol.$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];
 
     if ( false !== strpos($url, '?action-rcl') ){
             $matches = '';
@@ -12,10 +17,10 @@ function rcl_referer_url($typeform=false){
             preg_match_all('/(?<=http\:\/\/)[A-zА-я0-9\/\.\_\-\s\ё]*(&=\&action\-rcl)/iu',$url, $matches);
             $host = $matches[0][0];
     }
-    if(!$host) $host = $_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];
-    $host = 'http://'.$host;
+    if(!isset($host)||!$host) $host = $_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];
+    $host = $protocol.$host;
     if($typeform=='remember') $host = rcl_format_url($host).'action-rcl=remember&success=true';
-    echo $host;
+    return $host;
 }
 
 //Добавляем фильтр для формы авторизации
@@ -135,12 +140,11 @@ function rcl_get_authorize_form($type=false,$form=false){
                     echo '<div class="username"><b>'.__('Hi','rcl').', '.get_the_author_meta('display_name', $user_ID).'!</b></div>
                     <div class="author-avatar">';
                     echo '<a href="'.$rcl_user_URL.'" title="'.__('In personal account','rcl').'">'.get_avatar($user_ID, 60).'</a>';
-                    if(function_exists('rcl_get_rating_block')):
 
-                        $karma = apply_filters('rcl_get_all_rating_user_rcl',0,$user_ID);
-                        echo rcl_get_rating_block($karma);
-
+                    if(function_exists('rcl_rating_block')):
+                        echo rcl_rating_block(array('ID'=>$user_ID,'type'=>'user'));
                     endif;
+
                     echo '</div>';
                     echo '<div class="buttons">';
 
@@ -184,8 +188,8 @@ function rcl_get_authorize_form($type=false,$form=false){
                         }
                     }else if(!$login_form){
                         echo '<div class="buttons">';
-                                $buttons .= '<p>'.rcl_get_button(__('Login','rcl'),'#',array('icon'=>'fa-sign-in','class'=>'sign-button')).'</p>
-                                <p>'.rcl_get_button(__('Registration','rcl'),'#',array('icon'=>'fa-book','class'=>'reglink')).'</p>';
+                                $buttons = '<p>'.rcl_get_button(__('Login','rcl'),'#',array('icon'=>'fa-sign-in','class'=>'rcl-login')).'</p>
+                                <p>'.rcl_get_button(__('Registration','rcl'),'#',array('icon'=>'fa-book','class'=>'rcl-register')).'</p>';
                                 echo apply_filters('buttons_widget_rcl',$buttons);
                         echo '</div>';
                     }

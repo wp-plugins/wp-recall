@@ -1,6 +1,3 @@
-.wprecallblock #lk-conteyner {
-padding: 0px;
-}
 .wprecallblock {
 border: 0px;
 padding: 10px 0px;
@@ -20,7 +17,6 @@ margin: 2px 0;
 background:#D7EFFF;
 }
 .wprecallblock .rcl-menu {
-padding: 0px 10px 0px 0px;
 border-right: 1px solid rgb(181, 220, 255);
 }
 .wprecallblock #lk-menu a.active, .wprecallblock #lk-content .sec_block_button.active, .wprecallblock #lk-content .child_block_button.active,
@@ -51,7 +47,7 @@ padding: 10px 5px;
 vertical-align: middle;
 border-bottom: 1px solid rgb(230, 243, 255);
 }
-.privat_block .del_history, .privat_block .remove_ban_list {
+.privat_block .del_history, .privat_block .remove_ban_list, .privat_block .remove_black_list {
 float: right;
 padding-right: 0px;
 border: none;
@@ -113,7 +109,7 @@ border: 0px;
 border-radius: 9px;
 box-shadow: none;
 color: black;
-margin: 20px 60px 10px;
+margin: 20px 0px 10px;
 padding: 5px 10px;
 word-wrap: break-word;
 }
@@ -246,16 +242,12 @@ border-radius: 2px;
 #lk-content .privat_block .you .content-mess .privat-balloon {
     background: url("../img/ballun-right.png") no-repeat scroll 0 0 rgb(181, 220, 255);
 }
-#last-visitors > li {
-    height: 47px !important;
-}
+
 .wprecallblock #lk-conteyner .lk-footer .footer-block-rcl ul li .avatar {
     height: 44px;
     margin: 0;
 }
-#lk-gallery > li {
-    height: 47px !important;
-}
+
 .lk-gallery li a img {
     height: 44px;
 }

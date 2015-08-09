@@ -3,8 +3,10 @@
     margin: 0 auto;
     max-width: 300px;
     width: 100%;
-    overflow:hidden;
     color:#333;
+}
+.widget .panel_lk_recall {
+    overflow:hidden;
 }
 .panel_lk_recall.floatform{
 	display:none;
@@ -37,6 +39,7 @@
 .panel_lk_recall .author-avatar{
 	margin:0 5px 0 0;
 	float: left;
+        position: relative;
 }
 .panel_lk_recall .buttons > a input{
 	display:block;

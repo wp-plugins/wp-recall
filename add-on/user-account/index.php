@@ -130,13 +130,13 @@ function rcl_admin_statistic_cashe(){
 		if($_GET['user']){
 			$get = $_GET['user'];
 			$get_data = '&user='.$get;
-			$statistic = $wpdb->get_results($wpdb->prefix("SELECT * FROM ".RMAG_PREF ."pay_results WHERE user = '%d' ORDER BY ID DESC LIMIT %d,%d",$get,$start,$inpage));
-			$count_adds = $wpdb->get_var($wpdb->prefix("SELECT COUNT(ID) FROM ".RMAG_PREF ."pay_results WHERE user = '$get'"));
+			$statistic = $wpdb->get_results($wpdb->prepare("SELECT * FROM ".RMAG_PREF ."pay_results WHERE user = '%d' ORDER BY ID DESC LIMIT %d,%d",$get,$start,$inpage));
+			$count_adds = $wpdb->get_var($wpdb->prepare("SELECT COUNT(ID) FROM ".RMAG_PREF ."pay_results WHERE user = '%d'",$get));
 		}elseif($_GET['date']){
 			$get = $_GET['date'];
 			$get_data = '&date='.$get;
-			$statistic = $wpdb->get_results($wpdb->prefix("SELECT * FROM ".RMAG_PREF ."pay_results WHERE time_action LIKE '%s' ORDER BY ID DESC LIMIT %d,%d",$get.'%',$start,$inpage));
-			$count_adds = $wpdb->get_var($wpdb->prefix("SELECT COUNT(ID) FROM ".RMAG_PREF ."pay_results WHERE time_action LIKE '%s'",$get.'%'));
+			$statistic = $wpdb->get_results($wpdb->prepare("SELECT * FROM ".RMAG_PREF ."pay_results WHERE time_action LIKE '%s' ORDER BY ID DESC LIMIT %d,%d",$get.'%',$start,$inpage));
+			$count_adds = $wpdb->get_var($wpdb->prepare("SELECT COUNT(ID) FROM ".RMAG_PREF ."pay_results WHERE time_action LIKE '%s'",$get.'%'));
 		}else{
 
 			$_POST['year']=$year;$_POST['month']=$month;
@@ -258,8 +258,11 @@ function rcl_add_count_user(){
 	global $user_ID;
 
 	if($user_ID&&$_POST['count']){
-
-            $log['redirectform'] = rcl_payform(array('id_pay'=>rand(0,100000000),'summ'=>intval($_POST['count']),'type'=>1));
+            global $wpdb;
+            $num_max = $wpdb->get_var("SELECT MAX(inv_id) FROM ".RMAG_PREF ."pay_results");
+            if($num_max) $id_pay = $num_max+1;
+            else $id_pay = rand(100000,110000);
+            $log['redirectform'] = rcl_payform(array('id_pay'=>$id_pay,'summ'=>intval($_POST['count']),'type'=>1));
             $log['otvet']=100;
 
 	} else {

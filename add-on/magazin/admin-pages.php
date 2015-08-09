@@ -165,7 +165,8 @@ function rmag_manage_orders(){
 			<div style="width:1050px">';//начало блока настроек профиля
 	$n=0;
 	$s=0;
-	if($_GET['remove-trash']==101&&wp_verify_nonce( $_GET['_wpnonce'], 'delete-trash-rmag')) $wpdb->query($wpdb->prepare("DELETE FROM ".RMAG_PREF ."orders_history WHERE order_status = '%d'",6));
+	if($_GET['remove-trash']==101&&wp_verify_nonce( $_GET['_wpnonce'], 'delete-trash-rmag'))
+                $wpdb->query($wpdb->prepare("DELETE FROM ".RMAG_PREF ."orders_history WHERE order_status = '%d'",6));
 
 if($_GET['order-id']){
 
@@ -299,7 +300,11 @@ if($_GET['order-id']){
 			$args['order_status'] = intval($_GET['status']);
 		}elseif($_GET['user']){
 			$args['user_id'] = intval($_GET['user']);
-		}else{
+                }elseif($_GET['search_order']){
+                    $args['order_id'] = intval($_GET['search_order']);
+                    $args['user_id'] = intval($_GET['search_order']);
+                    $args['search'] = true;
+                }else{
 			$args['status_not_in'] = 6;
 			$args['year'] = $year;
 			$args['month'] = $month;
@@ -324,6 +329,13 @@ if($_GET['order-id']){
             $table .= rcl_get_chart_orders($orders);
 
 	$table .= '<h3>Всего заказов: '.$n.' на '.$all_pr.' рублей</h3>';
+
+        $table .= '<form method="get" action="'.admin_url('admin.php?page=manage-rmag').'"><p class="search-box">
+	<label class="screen-reader-text" for="order-search-input">Поиск заказов:</label>
+	<input type="search" id="order-search-input" name="search_order" value="">
+	<input type="submit" id="search-submit" class="button" value="Поиск заказов">
+        <input type="hidden" name="page" value="manage-rmag">
+        </p></form>';
 
 	$table .= '<form action="" method="post">';
 
@@ -415,7 +427,7 @@ add_action('admin_init','rcl_read_exportfile');
 function rcl_read_exportfile(){
 	global $wpdb;
 	//print_r($_POST);exit;
-	if(!wp_verify_nonce( $_POST['_wpnonce'], 'get-csv-file' )) return false;
+	if(!isset($_POST['_wpnonce'])||!wp_verify_nonce( $_POST['_wpnonce'], 'get-csv-file' )) return false;
 
 	$file_name = 'products.xml';
 	$file_src    = plugin_dir_path( __FILE__ ).'xml/'.$file_name;
@@ -488,7 +500,7 @@ function rmag_export(){
 global $wpdb;
 
 	$table_price .='<style>table{min-width:500px;width:50%;margin:20px 0;}table td{border:1px solid #ccc;padding:3px;}</style>';
-	$postmeta = $wpdb->get_results($wpdb->prepare("SELECT meta_key FROM ".$wpdb->prefix ."postmeta GROUP BY meta_key ORDER BY meta_key"));
+	$postmeta = $wpdb->get_results("SELECT meta_key FROM ".$wpdb->prefix ."postmeta GROUP BY meta_key ORDER BY meta_key");
 	$table_price .='<h2>Экспорт/импорт данных</h2><form method="post" action="">
 	'.wp_nonce_field('get-csv-file','_wpnonce',true,false).'
 	<p><input type="checkbox" name="post_title" checked value="1"> Добавить заголовок</p>
@@ -512,16 +524,19 @@ global $wpdb;
 		$table_price .= '<b>'.$key.'</b> - '.$name.'<br />';
 	}
 
-	$n=1;
-	foreach ($postmeta as $key){
-		if(!isset($fields[$key->meta_key])) continue;
-		if (strpos($key->meta_key, "goods_id") === FALSE && strpos($key->meta_key , "_") !== 0){
-			$n++;
-			$check = (isset($fields[$key->meta_key]))?1:0;
-			$table_price .= '<td><input '.checked($check,1,false).' type="checkbox" name="'.$key->meta_key.'" value="1"> '.$key->meta_key.'</td>';
-			if($n%2) $table_price .= '</tr><tr>';
+	if($postmeta){
+		$n=1;
+		foreach ($postmeta as $key){
+			if(!isset($fields[$key->meta_key])) continue;
+			if (strpos($key->meta_key, "goods_id") === FALSE && strpos($key->meta_key , "_") !== 0){
+				$n++;
+				$check = (isset($fields[$key->meta_key]))?1:0;
+				$table_price .= '<td><input '.checked($check,1,false).' type="checkbox" name="'.$key->meta_key.'" value="1"> '.$key->meta_key.'</td>';
+				if($n%2) $table_price .= '</tr><tr>';
+			}
 		}
 	}
+
 	$table_price .='</tr><tr><td colspan="2" align="right"><input type="submit" name="get_csv_file" value="Выгрузить товары в файл"></td></tr></table>
 	'.wp_nonce_field('get-csv-file','_wpnonce',true,false).'
         </form>';

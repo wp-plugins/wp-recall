@@ -3,7 +3,7 @@
     Plugin Name: WP-Recall
     Plugin URI: http://wppost.ru/?p=69
     Description: Фронт-енд профиль, система личных сообщений и рейтинг пользователей на сайте вордпресс.
-    Version: 12.2.1
+    Version: 13.0.0
     Author: Plechev Andrey
     Author URI: http://wppost.ru/
     GitHub Plugin URI: https://github.com/plechev-64/wp-recall
@@ -25,7 +25,7 @@ function init_global_rcl(){
 
 	$rcl_options = get_option('primary-rcl-options');
 
-	define('VER_RCL', '12.2.1');
+	define('VER_RCL', '13.0.0');
 
 	$upload_dir = rcl_get_wp_upload_dir();
 
@@ -53,6 +53,8 @@ function recall_install(){
     init_global_rcl();
 
     require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+
+    load_theme_textdomain('rcl', RCL_PATH.'languages/');
 
     $upload_dir = rcl_get_wp_upload_dir();
 
@@ -86,7 +88,7 @@ function recall_install(){
 		wp_insert_post(array('post_title'=>__('FEED','rcl'),'post_content'=>'[feed]','post_status'=>'publish','post_author'=>1,'post_type'=>'page','post_name'=>'user-feed'));
 
 		$active_addons = get_site_option('active_addons_recall');
-		$def_addons = array('review','profile','feed','publicpost','message','rayting');
+		$def_addons = array('rating-system','review','profile','feed','publicpost','message');
 		foreach($def_addons as $addon){
 			$path = RCL_PATH.'add-on/'.$addon.'/index.php';
 			if ( false !== strpos($path, '\\') ) $path = str_replace('\\','/',$path);
@@ -115,27 +117,28 @@ function recall_install(){
 			array('meta_key'=>'show_admin_bar_front')
 		);
 
-	}
+		$roledata = array(
+			'need-confirm' => array(
+				'name'=>__('Unconfirmed','rcl'),
+				'cap'=>array('read' => false, 'edit_posts' => false, 'delete_posts' => false, 'upload_files' => false)
+			),
+			'banned' => array(
+				'name'=>__('Ban','rcl'),
+				'cap'=>array('read' => false, 'edit_posts' => false, 'delete_posts' => false, 'upload_files' => false)
+			)
+		);
 
-	update_option('default_role','author');
-	update_option('show_avatars',1);
+		foreach($roledata as $key=>$role){
+			remove_role($key);
+			add_role($key, $role['name'], $role['cap']);
+		}
 
-        rcl_update_avatar_data();
+                update_option('default_role','author');
 
-	$roledata = array(
-		'need-confirm' => array(
-			'name'=>__('Unconfirmed','rcl'),
-			'cap'=>array('read' => false, 'edit_posts' => false, 'delete_posts' => false, 'upload_files' => false)
-		),
-                'banned' => array(
-			'name'=>__('Ban','rcl'),
-			'cap'=>array('read' => false, 'edit_posts' => false, 'delete_posts' => false, 'upload_files' => false)
-		)
-	);
-
-	foreach($roledata as $key=>$role){
-		remove_role($key);
-		add_role($key, $role['name'], $role['cap']);
+	}else{
+		rcl_update_avatar_data();
+		rcl_update_old_feeds();
+		update_option('show_avatars',1);
 	}
 
 	$rcl_options['footer_url_recall']=1;
@@ -233,7 +236,8 @@ function rcl_sidebar(){
 
 function rcl_content(){
     global $user_LK; $content = '';
-    echo apply_filters('rcl_content_lk',$content,$user_LK);
+    $content = apply_filters('rcl_content_lk',$content,$user_LK);
+    echo $content;
 }
 
 function rcl_footer(){
@@ -252,15 +256,18 @@ function rcl_action(){
 
 function rcl_avatar($size=120){
     global $user_LK; $after='';
-    echo get_avatar($user_LK,$size);
-    echo apply_filters('after-avatar-rcl',$after,$user_LK);
+    echo '<div id="rcl-contayner-avatar">';
+	echo '<span class="rcl-user-avatar">'.get_avatar($user_LK,$size).'</span>';
+	echo apply_filters('after-avatar-rcl',$after,$user_LK);
+	echo '</div>';
+
 }
 
 function rcl_status_desc(){
     global $user_LK;
     $desc = get_the_author_meta('description',$user_LK);
     if($desc) echo '<div class="ballun-status">'
-        . '<span class="ballun"></span>'
+        //. '<span class="ballun"></span>'
         . '<p class="status-user-rcl">'.nl2br(esc_textarea($desc)).'</p>'
         . '</div>';
 }

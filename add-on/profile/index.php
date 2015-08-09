@@ -5,7 +5,7 @@ function rcl_profile_options_page(){
 	add_submenu_page( 'manage-wprecall', __('Profile fields','rcl'), __('Profile fields','rcl'), 'manage_options', 'manage-userfield', 'rcl_manage_profile_fields');
 }
 
-rcl_block('content','rcl_get_show_profile_fields',array('id'=>'pf-block','order'=>8,'public'=>1));
+rcl_block('content','rcl_get_show_profile_fields',array('id'=>'pf-block','order'=>20,'public'=>1));
 function rcl_get_show_profile_fields($author_lk){
 	$profile_fields='';
 	return apply_filters('show_profile_fields_rcl',$profile_fields,$author_lk);
@@ -97,6 +97,9 @@ function rcl_update_profile_fields($user_id){
             }
         }
     }
+
+    do_action('rcl_update_profile_fields',$user_id);
+
 }
 
 //Сохраняем изменения в произвольных полях профиля со страницы пользователя
@@ -168,42 +171,50 @@ function rcl_button_avatar_upload($content,$author_lk){
 	global $user_ID;
 	if($user_ID!=$author_lk) return $content;
 
+	if(get_user_meta($user_ID,'rcl_avatar',1)){
+		$content .= '<a title="'.__('Delete avatar','rcl').'" class="rcl-avatar-delete" href="'.wp_nonce_url( rcl_format_url(rcl_get_current_url()).'rcl-action=delete_avatar', $user_ID ).'"><i class="fa fa-times"></i></a>';
+	}
+
 	$content .= '
-	<div id="userpic">
-		<div class="js-preview userpic__preview"></div>
-		<div class="buttons-upload">
-			<div id="userpic-btn" class="btn btn-success js-fileapi-wrapper">
-			  <div class="fa fa-download js-browse">
-				 <span class="btn-txt"></span>
-				 <input name="filedata" type="file">
-			  </div>
-			  <div class="js-upload" style="display: none;">
-				 <div class="progress progress-success"><div class="js-progress bar"></div></div>
-				 <span class="btn-txt">загрузка</span>
-			  </div>
-		   </div>
-			<div id="webcam-btn" class="btn btn-success">
-			  <div class="fa fa-camera js-webcam">
-				 <span class="btn-txt"></span>
-			  </div>
-			  <div class="js-upload" style="display: none;">
-				 <div class="progress progress-success"><div class="js-progress bar"></div></div>
-				 <span class="btn-txt">загрузка</span>
-			  </div>
-		   </div>
-		</div>
+	<div id="userpic-upload">
+		<span id="file-upload" class="fa fa-download">
+			<input type="file" id="userpicupload" accept="image/*" name="uploadfile">
+		</span>
+		<span id="webcamupload" class="fa fa-camera"></span>
 	</div>
-	<div id="webcam" class="webcam">
-	   <div class="js-preview webcam__preview"></div>
-	</div>
-	<div class="userpic-notice"></div>
-	<div id="popup" class="popup" style="display: none;">
-		<div class="popup__body"><div class="js-img"></div></div>
-		<div style="margin: 0 0 5px; text-align: center;">
-			<div class="js-upload btn btn_browse btn_browse_small">Загрузить</div>
-		</div>
-	</div>';
+	<span id="avatar-upload-progress"></span>';
 	return $content;
+}
+
+add_action('wp','rcl_delete_avatar_action');
+function rcl_delete_avatar_action(){
+	global $wpdb,$user_ID,$rcl_avatar_sizes;
+	if ( !isset( $_GET['rcl-action'] )||$_GET['rcl-action']!='delete_avatar' ) return false;
+	if( !wp_verify_nonce( $_GET['_wpnonce'], $user_ID ) ) wp_die('Error');
+
+	$result = delete_user_meta($user_ID,'rcl_avatar');
+
+	if (!$result) wp_die('Error');
+
+        $dir_path = TEMP_PATH.'avatars/';
+        foreach($rcl_avatar_sizes as $key=>$size){
+            unlink($dir_path.$user_ID.'-'.$size.'.jpg');
+	}
+        unlink($dir_path.$user_ID.'.jpg');
+
+	wp_redirect( rcl_format_url(get_author_posts_url($user_ID)).'rcl-avatar=deleted' );  exit;
+}
+
+add_filter('rcl_content_lk','rcl_add_more_link_content',100);
+function rcl_add_more_link_content($content){
+    if(!$content) return $content;
+    return '<a href="#" class="rcl-more-link" onclick="rcl_more_view(this); return false;">Подробная информация <i class="fa fa-plus-square-o"></i></a>'
+    .'<div class="more-content">'.$content.'</div>';
+}
+
+add_action('wp','rcl_notice_avatar_deleted');
+function rcl_notice_avatar_deleted(){
+    if (isset($_GET['rcl-avatar'])&&$_GET['rcl-avatar']=='deleted') rcl_notice_text(__('Your avatar has been removed','rcl'),'success');
 }
 
 function rcl_ajax_tab_profile($array_tabs){
@@ -445,7 +456,7 @@ function rcl_tab_profile_content($author_lk){
 
 	}
 
-        $profile_block = apply_filters('profile_options_rcl',$profile_block,$userdata);
+    $profile_block = apply_filters('profile_options_rcl',$profile_block,$userdata);
 
 	$profile_block .= '<input type="hidden" name="action" value="update" />
 	<input type="hidden" name="user_id" id="user_id" value="'.$user_ID.'" />
@@ -610,6 +621,8 @@ function rcl_show_custom_fields_profile($fields_content,$author_lk){
 		}
 	}
 
+        if(!$show_custom_field) return false;
+
 	if(isset($show_custom_field))$fields_content .= '<div class="show-profile-fields">'.$show_custom_field.'</div>';
 	return $fields_content;
 }
@@ -707,121 +720,172 @@ function rcl_get_default_fields_profile() {
 function rcl_get_profile_scripts($script){
 	global $rcl_options;
 
-	$weight = (isset($rcl_options['avatar_weight'])&&$rcl_options['avatar_weight'])? $rcl_options['avatar_weight']: $weight = '2';
+	$maxsize_mb = (isset($rcl_options['avatar_weight'])&&$rcl_options['avatar_weight'])? $rcl_options['avatar_weight']: 2;
+	$maxsize = $maxsize_mb*1024*1024;
 
 	$script .= "
-	jQuery('#userpic').fileapi({
-	   url: wpurl+'wp-admin/admin-ajax.php',
-	   data:{action:'rcl_avatar_upload'},
-	   accept: 'image/*',
-	   imageSize: { minWidth: 100, minHeight: 100 },
-	   maxSize: ".$weight." * FileAPI.MB,
-	   elements: {
-		  active: { show: '#userpic-btn .js-upload', hide: '#userpic-btn .js-browse' },
-		  preview: {
-			 el: '.js-preview',
-			 width: 120,
-			 height: 120
-		  },
-		  progress: '#userpic-btn .js-progress'
-	   },
-	   onSelect: function (evt, ui){
-			ui.files;
-			if( ui.other.length ){
-			  var errors = ui.other[0].errors;
-			  if( errors ){
-				  errors.maxSize;
-				  errors.maxFiles;
-				  errors.minWidth;
-				  errors.minHeight;
-				  errors.maxWidth;
-				  errors.maxHeight;
-			  }
-		  }
-		  var file = ui.files[0];
-		  if( file ){
-			 jQuery('#popup').modal({
-				closeOnEsc: true,
-				closeOnOverlayClick: false,
-				onOpen: function (overlay){
-				   jQuery(overlay).on('click', '.js-upload', function (){
-					  jQuery.modal().close();
-					  jQuery('#userpic').fileapi('upload');
-				   });
-				   jQuery('.js-img', overlay).cropper({
-					  file: file,
-					  bgColor: '#fff',
-					  maxSize: [jQuery(window).width()-100, jQuery(window).height()-100],
-					  minSize: [150, 150],
-					  selection: '90%',
-					  onSelect: function (coords){
-						 jQuery('#userpic').fileapi('crop', file, coords);
-					  }
-				   });
-				}
-			 }).open();
-		  }
-	   },
-	   onUpload:function(evt, uiEvt){
-			jQuery('.userpic-notice,.webcam-notice').empty();
+	$('#userpicupload').fileupload({
+		dataType: 'json',
+		type: 'POST',
+		url: wpurl+'wp-admin/admin-ajax.php',
+		formData:{action:'rcl_avatar_upload'},
+		loadImageMaxFileSize: ".$maxsize.",
+		autoUpload:false,
+		previewMaxWidth: 900,
+		previewMaxHeight: 900,
+		imageMinWidth:150,
+		imageMinHeight:150,
+		disableExifThumbnail: true,
+		progressall: function (e, data) {
+			var progress = parseInt(data.loaded / data.total * 100, 10);
+			$('#avatar-upload-progress').show().html('<span>'+progress+'%</span>');
 		},
-	   onComplete:function(evt, uiEvt){
-			var result = uiEvt.result;
-			if(result['result']){
-				jQuery('.userpic-notice').html(result['result']);
+		processalways: function (e, data) {
+			$.each(data.files, function (index, file) {
+
+				$('#rcl-preview').remove();
+
+				if(file.size>".$maxsize."){
+					rcl_notice('Превышен максимальный размер для изображения! Макс. ".$maxsize_mb."MB','error');
+					return false;
+				}
+
+				var canvas = data.files[0].preview;
+				var dataURL = canvas.toDataURL();
+
+                                $( '#rcl-preview' ).remove();
+
+				$('body > div').last().after('<div id=\'rcl-preview\' title=\'Загружаемое изображение\'><img src=\''+dataURL+'\'></div>');
+
+				var image = $('#rcl-preview img');
+
+                                image.load(function() {
+                                    var img = $(this);
+                                    var height = img.height();
+                                    var width = img.width();
+                                    var jcrop_api;
+
+                                    img.Jcrop({
+                                            aspectRatio: 1,
+                                            minSize:[150,150],
+                                            onSelect:function(c){
+                                                    img.attr('data-width',width).attr('data-height',height).attr('data-x',c.x).attr('data-y',c.y).attr('data-w',c.w).attr('data-h',c.h);
+                                            }
+                                    },function(){
+                                            jcrop_api = this;
+                                    });
+
+                                    $( '#rcl-preview' ).dialog({
+                                      modal: true,
+                                      imageQuality: 1,
+                                      width: width+32,
+                                      resizable: false,
+                                      close: function (e, data) {
+                                              jcrop_api.destroy();
+                                              $( '#rcl-preview' ).remove();
+                                      },
+                                      buttons: {
+                                            Ok: function() {
+                                              data.submit();
+                                              $( this ).dialog( 'close' );
+                                            }
+                                      }
+                                    });
+
+                                });
+
+			});
+		},
+		submit: function (e, data) {
+			var image = $('#rcl-preview img');
+			if (parseInt(image.data('w'))){
+				var src = image.attr('src');
+				var width = image.data('width');
+				var height = image.data('height');
+				var x = image.data('x');
+				var y = image.data('y');
+				var w = image.data('w');
+				var h = image.data('h');
+				data.formData = {
+					coord: x+','+y+','+w+','+h,
+					image: width+','+height,
+					action:'rcl_avatar_upload'
+				};
 			}
+		},
+		done: function (e, data) {
+
+			if(data.result['error']){
+				rcl_notice(data.result['error'],'error');
+				return false;
+			}
+
+			$('#rcl-contayner-avatar .rcl-user-avatar img').attr('src',data.result['avatar_url']);
+			$('#avatar-upload-progress').hide().empty();
+			$( '#rcl-preview' ).remove();
+			rcl_notice(data.result['success'],'success');
+
 		}
 	});
 
-	jQuery('#webcam-btn').fileapi({
-		   url: wpurl+'wp-admin/admin-ajax.php',
-			data:{action:'rcl_avatar_upload'},
-		   autoUpload: true,
-		   elements: {
-			  active: { show: '#webcam-btn .js-upload', hide: '#webcam-btn .js-webcam' },
-			  preview: {
-				 el: '#userpic .js-preview',
-				 width: 120,
-				 height: 120
-			  },
-			  progress: '#webcam-btn .js-progress'
-		   }
-	});
+	$('#webcamupload').live('click',function(){
 
-	jQuery('.js-webcam').click(function (evt){
-		   var modal = jQuery('#popup').modal({
-			closeOnOverlayClick: false,
-			  onOpen: function (overlay){
-				 jQuery('.js-img', overlay).webcam({
-					width: 320,
-					height: 320,
-					error: function (err){
-					   jQuery.modal().close();
-					   alert(\"Похоже, что ваш браузер\nне поддерживает эту возможность\");
-					},
-					success: function (webcam){
-					   jQuery(overlay).on('click', '.js-upload', function (){
-						  jQuery('#webcam-btn').fileapi('add', webcam.shot());
-						  modal.close();
-					   });
+                $( '#rcl-preview' ).remove();
+		$('body > div').last().after('<div id=\'rcl-preview\' title=\'Снимок с камеры\'></div>');
+
+                var webCam = new SayCheese('#rcl-preview', { audio: true });
+
+                $( '#rcl-preview' ).dialog({
+                    modal: true,
+                    imageQuality: 1,
+                    resizable: false,
+                    width:355,
+                    close: function (e, data) {
+                        webCam.stop();
+                        $( this ).dialog( 'close' );
+                        $( '#rcl-preview' ).remove();
+                    },
+                    open: function (e, data) {
+                        webCam.start();
+                    },
+                    buttons: {
+                        Снимок: function() {
+                                webCam.takeSnapshot(320, 240);
+                        }
+                    }
+		});
+
+		webCam.on('snapshot', function(snapshot) {
+
+			var img = document.createElement('img');
+
+			$(img).on('load', function() {
+				$('#rcl-preview').html(img);
+			});
+			img.src = snapshot.toDataURL('image/png');
+
+			var dataString = 'action=rcl_avatar_upload&src='+img.src;
+			$.ajax({
+				type: 'POST',
+				data: dataString,
+				dataType: 'json',
+				url: wpurl+'wp-admin/admin-ajax.php',
+				success: function(data){
+
+					if(data['error']){
+						rcl_notice(data['error'],'error');
+						return false;
 					}
-				 });
-			  },
-			  onClose: function (overlay){
-				 jQuery('.js-img', overlay).webcam('destroy');
-			  },
-			  onUpload:function(evt, uiEvt){
-				jQuery('.userpic-notice,.webcam-notice').empty();
-			},
-		   onComplete:function(evt, uiEvt){
-				var result = uiEvt.result;
-				if(result['result']){
-					jQuery('.userpic-notice').html(result['result']);
+
+					$( '#rcl-preview' ).dialog('close');
+					$('#rcl-contayner-avatar .rcl-user-avatar img').attr('src',data['avatar_url']);
+					$( '#rcl-preview' ).remove();
+					rcl_notice(data['success'],'success');
 				}
-			}
-		   });
-		   modal.open();
-		   evt.preventDefault();
+			});
+
+		});
+
 	});";
 	return $script;
 }

@@ -9,16 +9,8 @@
 #feed-button .get-feed.active{
 	opacity:1;
 }
-#feed-control {
-    margin-bottom: 20px;
-	clear: both;
-	float: none;
-}
-.wprecallblock #feed-control {
-    display:block;
-}
-#block_author-rcl #feed-control {
-    margin: 0 0 0 0;
+#lk-conteyner .feed-control {
+
 }
 .users-feed .avatar {
     border: 1px solid #CCCCCC;
@@ -31,9 +23,7 @@
 #feedlist .feed-post, #feedlist .feedcomment {
     border-bottom: 1px solid #DFDFDF;
     margin-bottom: 10px;
-}
-#feedlist img {
-    box-shadow: 3px 3px 2px #CCCCCC;
+	overflow: hidden;
 }
 #feedlist .feed-author-avatar {
     float: left;
@@ -57,4 +47,37 @@
 .lk-footer #fd-footer{
     border:none!important;
     background:none!important;
+}
+.float-window-recall .rcl-feedlist{
+
+}
+.float-window-recall .rcl-feedlist > span{
+    float: left;
+
+    position: relative;
+}
+.float-window-recall .rcl-feedlist .feed-control{
+    top: 0px;
+
+    right: 3px;
+    position: absolute;
+}
+.float-window-recall .rcl-feedlist .feed-control a{
+    display: block;
+
+    width: 18px;
+    overflow: hidden;
+    border-radius: 0px;
+    border: 0;
+    font-size: 13px;
+    background: rgba(255,255,255,0.8);
+    padding: 3px;
+}
+.float-window-recall .rcl-feedlist .feed-control a i{
+    margin: 0;
+
+}
+.userlist .follow-button{
+    margin: 15px 0 5px;
+    text-align: right;
 }

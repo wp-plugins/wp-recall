@@ -1,7 +1,7 @@
 <?php
 
-add_shortcode('userlist','rcl_short_user_list');
-function rcl_short_user_list($atts, $content = null){
+add_shortcode('userlist','rcl_get_userlist');
+function rcl_get_userlist($atts, $content = null){
     global $post,$wpdb,$user_ID,$user,$group_id,$group_admin;
 
 	extract(shortcode_atts(array(
@@ -12,6 +12,7 @@ function rcl_short_user_list($atts, $content = null){
             'order' => 'DESC',
             'type' => 'rows',
             'usergroup' => false,
+            'usergroup_compare'=>'=',
             'limit' => 0,
             'onlyaction' => false,
             'group' => 0,
@@ -49,15 +50,17 @@ function rcl_short_user_list($atts, $content = null){
             case 'posts': $order_by = 'post_count'; break;
             case 'feeds': $order_by = 'feeds'; break;
             case 'comments': $order_by = 'comments_count'; break;
-            case 'rayting': $order_by = 'total'; break;
+            case 'rayting': $order_by = 'rating_total'; break;
             case 'action': $order_by = 'time_action'; break;
             case 'registered': $order_by = 'user_registered'; break;
             case 'display_name': $order_by = 'display_name'; break;
         }
 
+        $atts['add_uri']['filter']=$orderby;
+
     if((isset($_GET['search-user'])&&$search=='yes')||$include){
 
-        if($_GET['search-user']){
+        if(isset($_GET['search-user'])){
 
             if($orderby!='action'&&$orderby!='rayting'){
                 $orderby = 'action';
@@ -82,7 +85,13 @@ function rcl_short_user_list($atts, $content = null){
 
         $rqst = $UserList->search_request();
 
-        $rclnavi = new RCL_navi($inpage,$count_user,'&'.$rqst.'&filter='.$orderby,$page);
+        if(isset($atts['add_uri'])){
+            foreach($atts['add_uri'] as $k=>$v){
+                $rqst[] = $k.'='.$v;
+            }
+        }
+
+        $rclnavi = new RCL_navi($inpage,$count_user,'&'.implode('&',$rqst),$page);
         if(!$limit) $limit_us = $rclnavi->limit();
         else $limit_us = $limit;
 
@@ -103,7 +112,7 @@ function rcl_short_user_list($atts, $content = null){
 
             $flt_sql = "IN ($us_lst)";
 
-            if($order_by == 'total') $us_data = $UserList->get_usdata($order_by,$us_data,$us_lst);
+            if($order_by == 'rating_total') $us_data = $UserList->get_usdata($order_by,$us_data,$us_lst);
             if($order_by == 'time_action')  $us_data = $UserList->get_usdata($order_by,$us_data,$us_lst);
 
 	}
@@ -124,7 +133,7 @@ function rcl_short_user_list($atts, $content = null){
                     $args['meta_query'][] = array(
                         'key' => $f[0],
                         'value' => $f[1],
-                        'compare' => 'LIKE',
+                        'compare' => $usergroup_compare,
                     );
             }
             $args['meta_query']['relation'] = 'AND';
@@ -145,7 +154,13 @@ function rcl_short_user_list($atts, $content = null){
 
         }
 
-        $rclnavi = new RCL_navi($inpage,$count_user,'&filter='.$orderby,$page);
+        if(isset($atts['add_uri'])){
+            foreach($atts['add_uri'] as $k=>$v){
+                $rqst[] = $k.'='.$v;
+            }
+        }
+
+        $rclnavi = new RCL_navi($inpage,$count_user,'&'.implode('&',$rqst),$page);
         if(!$limit) $limit_us = $rclnavi->limit();
         else $limit_us = $limit;
 
@@ -161,8 +176,6 @@ function rcl_short_user_list($atts, $content = null){
             $group_admin = $wpdb->get_var($wpdb->prepare("SELECT user_id FROM $wpdb->usermeta WHERE meta_key = '%s'",'admin_group_'.$group));
             $us_data = $UserList->get_usdata_actions($us_data,$us_lst);
         }else{
-
-
 
             if($order_by){
 
@@ -206,7 +219,13 @@ function rcl_short_user_list($atts, $content = null){
        }
     }
 
-	$uslst_array = explode(',',$us_lst);
+    if($type=='rows'){
+            if($order_by!='post_count') $us_data = $UserList->add_post_count_data($us_data,$us_lst);
+            if($order_by!='comments_count') $us_data = $UserList->add_comments_count_data($us_data,$us_lst);
+            if($order_by!='user_registered') $us_data = $UserList->add_user_registered_data($us_data,$us_lst);
+    }
+
+    $uslst_array = explode(',',$us_lst);
 
     $users_desc = $wpdb->get_results($wpdb->prepare("SELECT user_id,meta_value FROM $wpdb->usermeta WHERE user_id IN (".rcl_format_in($uslst_array).") AND meta_key = 'description'",$uslst_array));
     foreach($users_desc as $us_desc){
@@ -232,7 +251,7 @@ function rcl_short_user_list($atts, $content = null){
 
         $userlist .= '<p class="alignleft">'.__('Filter by','rcl').': ';
         $userlist .= '<a '.rcl_a_active($orderby,'action').' href="'.$perm.'filter=action">'.__('Activity','rcl').'</a> ';
-        $userlist .= '<a '.rcl_a_active($orderby,'rayting').' href="'.$perm.'filter=rayting">'.__('Rated','rcl').'</a> ';
+        $userlist .= '<a '.rcl_a_active($orderby,'rating_total').' href="'.$perm.'filter=rayting">'.__('Rated','rcl').'</a> ';
         if(!isset($_GET['search-user'])) $userlist .= '<a '.rcl_a_active($orderby,'posts').' href="'.$perm.'filter=posts">'.__('Publications','rcl').'</a> ';
         if(!isset($_GET['search-user'])) $userlist .= '<a '.rcl_a_active($orderby,'comments').' href="'.$perm.'filter=comments">'.__('Comments','rcl').'</a> ';
         if(!isset($_GET['search-user'])) $userlist .= '<a '.rcl_a_active($orderby,'registered').' href="'.$perm.'filter=registered">'.__('Registration','rcl').'</a>';
@@ -245,13 +264,16 @@ function rcl_short_user_list($atts, $content = null){
 
     $a=0;
     if($us_data){
-        foreach((array)$us_data as $id=>$user){ rcl_setup_datauser($user); $a++;
-            if(!$user->user_action)continue;
+
+        foreach((array)$us_data as $id=>$user){ rcl_setup_datauser($user);
+            $a++;
+            //if(!$user->user_action)continue;
             if($onlyaction){
                     if(rcl_get_useraction($user->user_action)) continue;
             }
+
             $userlist .= rcl_get_include_template('user-'.$type.'.php');
-            if($a==$inpage) break;
+            //if($a==$inpage) break;
         }
     }
 
@@ -274,16 +296,18 @@ function rcl_default_search_form($form){
         if(isset($_GET['name-user'])) $name = $_GET['name-user'];
         if(isset($_GET['orderuser'])) $orderuser = $_GET['orderuser'];
 	$form .='
-        <form method="get" action="">
-        <p class="alignright">'.__('Search users','rcl').': <input type="text" name="name-user" value="'.$name.'">
-        <select name="orderuser">
-            <option '.selected($orderuser,1,false).' value="1">'.__('by name','rcl').'</option>
-            <option '.selected($orderuser,2,false).' value="2">'.__('by login','rcl').'</option>
-        </select>
-        <input type="submit" class="recall-button" name="search-user" value="'.__('Search','rcl').'"><br>
-        </p>
-		<input type="hidden" name="default-search" value="1">
-        </form>';
+		<div class="rcl-search-users">
+			<form method="get" action="">
+			<p>'.__('Search users','rcl').'</p>
+			<input type="text" name="name-user" value="'.$name.'">
+			<select name="orderuser">
+				<option '.selected($orderuser,1,false).' value="1">'.__('by name','rcl').'</option>
+				<option '.selected($orderuser,2,false).' value="2">'.__('by login','rcl').'</option>
+			</select>
+			<input type="submit" class="recall-button" name="search-user" value="'.__('Search','rcl').'">
+			<input type="hidden" name="default-search" value="1">
+			</form>
+		</div>';
 	return $form;
 }
 
@@ -314,6 +338,8 @@ function rcl_slider($atts, $content = null){
 	'num' => 5,
 	'term' => '',
         'type' => 'post',
+		'post_meta' => false,
+		'meta_value' => false,
         'tax' => 'category',
 	'exclude' => false,
         'include' => false,
@@ -344,7 +370,17 @@ function rcl_slider($atts, $content = null){
             )
 	);
 
+	if($post_meta)
+		$args['meta_query'] = array(
+            array(
+                'key'=>$post_meta,
+                'value'=>$meta_value
+            )
+	);
+
 	$posts = get_posts($args);
+
+	if(!$posts) return false;
 
 	$plslider = '<ul class="slider-rcl">';
 	foreach($posts as $post){
